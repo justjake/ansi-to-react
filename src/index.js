@@ -67,20 +67,27 @@ function inlineBundleToReact(bundle, key) {
   }, bundle.content);
 }
 
+function ansiToReact(input, linkify) {
+  if (linkify) {
+    return ansiToInlineStyle(input)
+      .map(linkifyBundle)
+      .map(inlineBundleToReact);
+  }
+  return ansiToInlineStyle(input).map(inlineBundleToReact);
+}
+
 function Ansi(props) {
   return React.createElement(
     'code',
     {},
-    props.linkify 
-      ? ansiToInlineStyle(props.children)
-        .map(linkifyBundle)
-        .map(inlineBundleToReact)
-      : ansiToInlineStyle(props.children).map(inlineBundleToReact)
+    ansiToReact(props.children, props.linkify)
   );
 }
 
 Ansi.propTypes = {
   children: React.PropTypes.string,
 };
+
+Ansi.ansiToReact = ansiToReact;
 
 module.exports = Ansi;

@@ -33,23 +33,37 @@ describe('Ansi', () => {
     expect(el).to.not.be.null;
     expect(el.text()).to.equal('that sentence\nwill make you pause');
   });
-  
+
   it('can linkify', () => {
     const el = enzyme.shallow(React.createElement(Ansi, {linkify: true}, 'this is a link: https://nteract.io/'));
     expect(el).to.not.be.null;
     expect(el.text()).to.equal('this is a link: https://nteract.io/');
     expect(el.html()).to.equal('<code><span>this is a link: <a href="https://nteract.io/" target="_blank">https://nteract.io/</a></span></code>');
   });
-  
+
   it('can distinguish URL-ish text', () => {
     const el = enzyme.shallow(React.createElement(Ansi, {linkify: true}, '<transport.model.TransportInfo'));
     expect(el).to.not.be.null;
     expect(el.text()).to.equal('<transport.model.TransportInfo');
   });
-  
+
   it('can distinguish URL-ish text', () => {
     const el = enzyme.shallow(React.createElement(Ansi, {linkify: true}, "<module 'something' from '/usr/local/lib/python2.7/dist-packages/something/__init__.pyc'>"));
     expect(el).to.not.be.null;
     expect(el.text()).to.equal("<module 'something' from '/usr/local/lib/python2.7/dist-packages/something/__init__.pyc'>");
   });
+
+  describe('ansiToReact', () => {
+    const ansiToReact = Ansi.ansiToReact;
+
+    it('returns a React fragment', () => {
+      const els = ansiToReact(`hello ${GREEN_FG}wo${YELLOW_BG}rl${RESET}d`)
+      const el = enzyme.shallow(React.createElement('div', null, els));
+
+      expect(el).to.not.be.null;
+      expect(el.text()).to.equal('hello world');
+      expect(el.html()).to.equal('<div><span>hello </span><span style="color:rgb(0, 187, 0);">wo</span><span style="background-color:rgb(187, 187, 0);color:rgb(0, 187, 0);">rl</span><span>d</span></div>');
+    })
+  })
 });
+
